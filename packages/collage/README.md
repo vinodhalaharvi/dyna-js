@@ -4,6 +4,10 @@ Photo collage layouts, solved exactly with
 [`@vhalaharvi/dyna`](../dyna). Framework-free; for React, see
 [`@vhalaharvi/react-collage`](../react-collage).
 
+![Seven photos laid out with no gaps](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/grid.jpg)
+
+<sub>Photos: [max-mapper/cats](https://github.com/max-mapper/cats), BSD licensed ([credits](https://github.com/vinodhalaharvi/dyna-js/blob/main/docs/CATS.md)).</sub>
+
 A layout is a guillotine tree: each cut puts two groups side by side or one on
 top of the other, and every photo keeps its own aspect ratio, so there are no
 gaps. `solve` considers every such layout of 1 to 9 photos and keeps the best

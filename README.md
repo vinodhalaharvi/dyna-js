@@ -11,6 +11,16 @@ built on it, in TypeScript.
 
 Each package builds only on the one above it.
 
+![Seven cats in the grid style](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/grid.jpg)
+
+![The same cats in the scrapbook style, two of them round](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/scrapbook.jpg)
+
+Resizing is a lookup, not a new solve:
+
+![Dragging the album from wide to tall re-lays the photos at every step](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/resize.webp)
+
+Photos: [max-mapper/cats](https://github.com/max-mapper/cats), BSD licensed ([credits](docs/CATS.md)).
+
 ```sh
 npm install @vhalaharvi/react-collage
 ```

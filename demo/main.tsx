@@ -9,10 +9,13 @@ const CATS: Photo[] = [
 
 function App() {
   const [count, setCount] = useState(6);
-  const [gap, setGap] = useState(6);
+  const [gap, setGap] = useState(14);
   const [pick, setPick] = useState(0);
   const [layouts, setLayouts] = useState<readonly Layout[]>([]);
-  const photos = useMemo(() => CATS.slice(0, count), [count]);
+  const [scrap, setScrap] = useState(true);
+  const [round, setRound] = useState<ReadonlySet<string>>(() => new Set(["cats/amber.jpg", "cats/collar.jpg"]));
+  const photos = useMemo(() => CATS.slice(0, count).map((p) => ({ ...p, shape: round.has(p.src) ? ("round" as const) : ("rect" as const) })), [count, round]);
+  const toggle = (p: Photo) => setRound((r) => { const n = new Set(r); if (n.has(p.src)) n.delete(p.src); else n.add(p.src); return n; });
   const aspects = useMemo(() => photos.map(photoAspect), [photos]);
   const collage = useCollage(aspects);
   const cur = layouts[Math.min(pick, layouts.length - 1)];
@@ -20,11 +23,15 @@ function App() {
     <main>
       <header>
         <h1>react-collage</h1>
-        <p>Drag the corner of the frame. Every shape was solved up front, so the layout changes instantly.</p>
+        <p>Drag the corner of the frame: every shape was solved up front, so the layout changes instantly. Click a photo to make it round.</p>
       </header>
       <div className="controls">
         <label>Photos <input type="range" min={1} max={10} value={count} onChange={(e) => { setCount(+e.target.value); setPick(0); }} /> <b>{count}</b></label>
-        <label>Gap <input type="range" min={0} max={20} value={gap} onChange={(e) => setGap(+e.target.value)} /> <b>{gap}px</b></label>
+        <span className="picks">
+          <button className={!scrap ? "on" : ""} onClick={() => { setScrap(false); setGap(6); }}>Grid</button>
+          <button className={scrap ? "on" : ""} onClick={() => { setScrap(true); setGap(14); }}>Scrapbook</button>
+        </span>
+        <label>Gap <input type="range" min={0} max={30} value={gap} onChange={(e) => setGap(+e.target.value)} /> <b>{gap}px</b></label>
         <span className="picks">
           {layouts.map((_, i) => (
             <button key={i} className={i === pick ? "on" : ""} onClick={() => setPick(i)}>{i === 0 ? "Best" : `Option ${i + 1}`}</button>
@@ -32,7 +39,7 @@ function App() {
         </span>
       </div>
       <div className="frame">
-        <CollageAlbum photos={photos} gap={gap} suggestion={pick} onLayouts={setLayouts} style={{ height: "100%" }} />
+        <CollageAlbum photos={photos} gap={gap} suggestion={pick} onLayouts={setLayouts} variant={scrap ? "scrapbook" : "grid"} onPhotoClick={toggle} style={{ height: "100%" }} />
       </div>
       <p className="facts">
         {collage

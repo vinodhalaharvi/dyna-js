@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { solve } from "@vinodhalaharvi/collage";
-import { CollageAlbum, cells, type Photo } from "../src/index.js";
+import { CollageAlbum, cells, placement, type Photo } from "../src/index.js";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -53,6 +53,30 @@ describe("cells", () => {
   });
 });
 
+describe("placement", () => {
+  const cell = { index: 0, x: 0, y: 0, width: 300, height: 200 };
+  it("is the same for the same photo at any size, and differs between photos", () => {
+    const a = placement("a.jpg", cell, false), b = placement("a.jpg", { ...cell, width: 600, height: 400 }, false);
+    expect(b.rotate).toBe(a.rotate);
+    expect(b.scale).toBe(a.scale);
+    expect(b.dx).toBeCloseTo(2 * a.dx, 9);
+    expect(placement("b.jpg", cell, false).rotate).not.toBe(a.rotate);
+  });
+  it("stays within its limits, and keeps round photos level and on top", () => {
+    for (let i = 0; i < 500; i++) {
+      const r = i % 2 === 0, p = placement("photo" + i, cell, r);
+      expect(Math.abs(p.rotate)).toBeLessThanOrEqual(3);
+      expect(Math.abs(p.dx)).toBeLessThanOrEqual(0.04 * 200);
+      expect(p.scale).toBeGreaterThanOrEqual(1);
+      expect(p.scale).toBeLessThanOrEqual(1 + 0.08 * (r ? 1.5 : 1));
+      if (r) {
+        expect(p.rotate).toBe(0);
+        expect(p.z).toBeGreaterThanOrEqual(1000);
+      } else expect(p.z).toBeLessThan(1000);
+    }
+  });
+});
+
 describe("CollageAlbum", () => {
   let el: HTMLDivElement;
   beforeAll(() => {
@@ -84,6 +108,12 @@ describe("CollageAlbum", () => {
     expect(offered).toBe(5);
     await act(async () => root.render(<CollageAlbum photos={photos} aspect={16 / 9} suggestion={2} />));
     expect(el.querySelectorAll("img")).toHaveLength(5);
+    const shaped = photos.map((p, i) => (i === 0 || i === 2 ? { ...p, shape: "round" as const } : p));
+    await act(async () => root.render(<CollageAlbum photos={shaped} aspect={16 / 9} variant="scrapbook" />));
+    expect(el.querySelectorAll('[data-shape="round"]')).toHaveLength(2);
+    expect(el.querySelectorAll('[data-shape="rect"]')).toHaveLength(3);
+    const box = el.querySelector("[data-collage-state]") as HTMLElement;
+    for (const d of box.children) expect((d as HTMLElement).style.transform).toMatch(/rotate\(/);
     act(() => root.unmount());
   });
 });

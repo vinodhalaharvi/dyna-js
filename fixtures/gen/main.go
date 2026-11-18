@@ -36,10 +36,10 @@ func main() {
 		centers[b] = gr.Center(b)
 	}
 	var out []fixture
-	for n := 1; n <= 10; n++ {
+	for n := 1; n <= 9; n++ {
 		cases := 4
-		if n >= 9 {
-			cases = 1
+		if n == 9 {
+			cases = 2
 		}
 		for c := 0; c < cases; c++ {
 			aspects := make([]float64, n)

@@ -90,7 +90,8 @@ describe("collage laws", () => {
 describe("solve", () => {
   it("rejects what the table cannot hold", () => {
     expect(() => solve([])).toThrow(RangeError);
-    expect(() => solve(new Array(11).fill(1))).toThrow(RangeError);
+    expect(() => solve(new Array(10).fill(1))).toThrow(RangeError);
+    expect(() => solve(new Array(9).fill(1))).not.toThrow();
     expect(() => solve([1, 0])).toThrow(RangeError);
     expect(() => solve([1, Number.NaN])).toThrow(RangeError);
   });

@@ -98,8 +98,8 @@ export const BUCKETS = 64;
 export const MAX_ASPECT = 12;
 /** Trades crop against balance when ranking: rank = minShare · fit^FIT_WEIGHT. */
 export const FIT_WEIGHT = 8;
-/** The most photos one collage takes: states are 32-bit masks, and the work grows as 3^n. */
-export const MAX_PHOTOS = 10;
+/** The most photos one collage takes: the work grows about threefold with each photo, and nine take a second or two. */
+export const MAX_PHOTOS = 9;
 
 /**
  * The area share of the smallest photo. Maximising the minimum is the

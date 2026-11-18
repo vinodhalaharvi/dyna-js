@@ -1,17 +1,53 @@
 {
   "name": "@vinodhalaharvi/react-collage",
   "version": "0.1.0",
-  "description": "A React photo collage that lays out any number of photos and resizes instantly",
+  "description": "A React photo collage for 1 to 9 photos: no gaps, little cropping, instant resizing, and a scrapbook style",
   "license": "MIT",
   "author": "Vinod Halaharvi",
-  "repository": { "type": "git", "url": "git+https://github.com/vinodhalaharvi/dyna-js.git", "directory": "packages/react-collage" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinodhalaharvi/dyna-js.git",
+    "directory": "packages/react-collage"
+  },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "src", "README.md"],
-  "scripts": { "build": "tsc -b" },
-  "dependencies": { "@vinodhalaharvi/collage": "0.1.0" },
-  "peerDependencies": { "react": ">=18" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "prepublishOnly": "tsc -b"
+  },
+  "dependencies": {
+    "@vinodhalaharvi/collage": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "react",
+    "collage",
+    "photo-gallery",
+    "gallery",
+    "layout",
+    "scrapbook"
+  ],
+  "homepage": "https://github.com/vinodhalaharvi/dyna-js/tree/main/packages/react-collage#readme",
+  "bugs": {
+    "url": "https://github.com/vinodhalaharvi/dyna-js/issues"
+  }
 }

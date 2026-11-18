@@ -1,0 +1,40 @@
+name: publish
+
+# Publishes the three packages to npm, in dependency order, with provenance.
+# A package whose version is already on npm is skipped, so bump "version" in
+# its package.json (and the ranges that depend on it) before running this.
+# Needs the repository secret NPM_TOKEN: an npm token allowed to publish
+# under the @vinodhalaharvi scope.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Publish what is new
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for p in dyna collage react-collage; do
+            name=$(node -p "require('./packages/$p/package.json').name")
+            version=$(node -p "require('./packages/$p/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already on npm"
+            else
+              npm publish -w "$name" --access public --provenance
+            fi
+          done

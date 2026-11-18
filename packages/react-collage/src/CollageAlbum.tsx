@@ -15,7 +15,7 @@ export interface Photo {
 }
 
 export interface CollageAlbumProps<P extends Photo = Photo> {
-  /** 1 to 10 photos; more are ignored */
+  /** 1 to 9 photos; more are ignored */
   photos: readonly P[];
   /**
    * Width / height of the collage. Leave it out to fill the height the
@@ -100,7 +100,7 @@ function useSize(): [(el: HTMLDivElement | null) => void, { width: number; heigh
 }
 
 /**
- * A photo collage that lays out any 1 to 10 photos with no gaps and little
+ * A photo collage that lays out any 1 to 9 photos with no gaps and little
  * cropping. Every canvas shape is solved up front, so resizing the album is a
  * table lookup.
  */

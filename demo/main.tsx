@@ -26,7 +26,7 @@ function App() {
         <p>Drag the corner of the frame: every shape was solved up front, so the layout changes instantly. Click a photo to make it round.</p>
       </header>
       <div className="controls">
-        <label>Photos <input type="range" min={1} max={10} value={count} onChange={(e) => { setCount(+e.target.value); setPick(0); }} /> <b>{count}</b></label>
+        <label>Photos <input type="range" min={1} max={9} value={count} onChange={(e) => { setCount(+e.target.value); setPick(0); }} /> <b>{count}</b></label>
         <span className="picks">
           <button className={!scrap ? "on" : ""} onClick={() => { setScrap(false); setGap(6); }}>Grid</button>
           <button className={scrap ? "on" : ""} onClick={() => { setScrap(true); setGap(14); }}>Scrapbook</button>
@@ -44,7 +44,7 @@ function App() {
       <p className="facts">
         {collage
           ? `${collage.histogram()[1].toLocaleString()} layouts of ${count} photo${count > 1 ? "s" : ""} considered`
-          : count > 8 ? "Solving… nine or ten photos take a few seconds" : "Solving…"}
+          : count > 8 ? "Solving… nine photos take a second or two" : "Solving…"}
         {collage && cur ? ` · smallest photo gets ${(cur.minShare * 100).toFixed(1)}% of the area · ${(cur.crop * 100).toFixed(1)}% cropped` : ""}
       </p>
     </main>

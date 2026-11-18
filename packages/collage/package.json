@@ -4,13 +4,46 @@
   "description": "Photo collage layouts solved exactly, with every container shape precomputed",
   "license": "MIT",
   "author": "Vinod Halaharvi",
-  "repository": { "type": "git", "url": "git+https://github.com/vinodhalaharvi/dyna-js.git", "directory": "packages/collage" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinodhalaharvi/dyna-js.git",
+    "directory": "packages/collage"
+  },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "src", "README.md"],
-  "scripts": { "build": "tsc -b" },
-  "dependencies": { "@vinodhalaharvi/dyna": "0.1.0" }
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "prepublishOnly": "tsc -b"
+  },
+  "dependencies": {
+    "@vinodhalaharvi/dyna": "^0.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "collage",
+    "photo-layout",
+    "gallery",
+    "layout",
+    "dynamic-programming"
+  ],
+  "homepage": "https://github.com/vinodhalaharvi/dyna-js/tree/main/packages/collage#readme",
+  "bugs": {
+    "url": "https://github.com/vinodhalaharvi/dyna-js/issues"
+  }
 }

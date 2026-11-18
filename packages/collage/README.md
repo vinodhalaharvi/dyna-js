@@ -1,8 +1,8 @@
-# @vinodhalaharvi/collage
+# @vhalaharvi/collage
 
 Photo collage layouts, solved exactly with
-[`@vinodhalaharvi/dyna`](../dyna). Framework-free; for React, see
-[`@vinodhalaharvi/react-collage`](../react-collage).
+[`@vhalaharvi/dyna`](../dyna). Framework-free; for React, see
+[`@vhalaharvi/react-collage`](../react-collage).
 
 A layout is a guillotine tree: each cut puts two groups side by side or one on
 top of the other, and every photo keeps its own aspect ratio, so there are no
@@ -10,7 +10,7 @@ gaps. `solve` considers every such layout of 1 to 9 photos and keeps the best
 three for each overall aspect ratio, so any canvas shape is a lookup.
 
 ```ts
-import { solve } from "@vinodhalaharvi/collage";
+import { solve } from "@vhalaharvi/collage";
 
 const collage = solve([1.5, 0.75, 1, 16 / 9]); // width / height of each photo
 const [best, ...others] = collage.layouts(16 / 9, 5); // best first, each different at a glance

@@ -1,5 +1,5 @@
 {
-  "name": "@vinodhalaharvi/collage",
+  "name": "@vhalaharvi/collage",
   "version": "0.1.0",
   "description": "Photo collage layouts solved exactly, with every container shape precomputed",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@vinodhalaharvi/dyna": "^0.1.0"
+    "@vhalaharvi/dyna": "^0.1.0"
   },
   "engines": {
     "node": ">=18"

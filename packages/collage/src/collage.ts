@@ -1,7 +1,7 @@
 import {
   dyna, lift, product, count, topK,
   type Algebra, type Coalgebra, type Entry, type Grading, type Node as DNode, type Pair, type Ranked, type Stats, type Vec,
-} from "@vinodhalaharvi/dyna";
+} from "@vhalaharvi/dyna";
 import { aspect, fracL, type Cut } from "./functor.js";
 
 // ---------- The functor's labels and the coalgebra ----------

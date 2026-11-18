@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { MAX_PHOTOS, solve, type Collage, type Layout } from "@vinodhalaharvi/collage";
+import { MAX_PHOTOS, solve, type Collage, type Layout } from "@vhalaharvi/collage";
 import { cells, photoAspect, type Cell } from "./geometry.js";
 import { placement, type ScrapbookOptions } from "./scrapbook.js";
 

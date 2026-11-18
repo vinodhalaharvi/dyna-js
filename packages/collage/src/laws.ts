@@ -1,7 +1,7 @@
 import {
   bruteForce, checkLaws, count, dyna, genRanked, product, rankedScoresEqual, seeded, topK, vecGet,
   type LawResult, type Rand,
-} from "@vinodhalaharvi/dyna";
+} from "@vhalaharvi/dyna";
 import { BUCKETS, Grades, K, MAX_ASPECT, newAlgebra, shareScore, splits, type Cell, type Step } from "./collage.js";
 
 const SPLITS: Step[] = [{ leaf: false, cut: "H" }, { leaf: false, cut: "V" }];

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { CollageAlbum, photoAspect, useCollage, type Layout, type Photo } from "@vinodhalaharvi/react-collage";
+import { CollageAlbum, photoAspect, useCollage, type Layout, type Photo } from "@vhalaharvi/react-collage";
 
 const CATS: Photo[] = [
   ["amber", 612, 612], ["calico", 500, 667], ["collar", 500, 282], ["curious", 423, 750], ["floof", 612, 612],

@@ -5,18 +5,18 @@ built on it, in TypeScript.
 
 | Package | What it is |
 | --- | --- |
-| [`@vinodhalaharvi/dyna`](packages/dyna) | The core: describe a problem as a coalgebra (how a state splits) and an algebra over a semiring (how answers combine); `dyna` memoises and folds it. |
-| [`@vinodhalaharvi/collage`](packages/collage) | Photo collage layouts as one such problem: every guillotine layout of up to 9 photos, solved once and indexed by aspect ratio. |
-| [`@vinodhalaharvi/react-collage`](packages/react-collage) | `<CollageAlbum>`: the collage as a React component, in a grid or scrapbook style, resizing instantly. |
+| [`@vhalaharvi/dyna`](packages/dyna) | The core: describe a problem as a coalgebra (how a state splits) and an algebra over a semiring (how answers combine); `dyna` memoises and folds it. |
+| [`@vhalaharvi/collage`](packages/collage) | Photo collage layouts as one such problem: every guillotine layout of up to 9 photos, solved once and indexed by aspect ratio. |
+| [`@vhalaharvi/react-collage`](packages/react-collage) | `<CollageAlbum>`: the collage as a React component, in a grid or scrapbook style, resizing instantly. |
 
 Each package builds only on the one above it.
 
 ```sh
-npm install @vinodhalaharvi/react-collage
+npm install @vhalaharvi/react-collage
 ```
 
 ```tsx
-import { CollageAlbum } from "@vinodhalaharvi/react-collage";
+import { CollageAlbum } from "@vhalaharvi/react-collage";
 
 <CollageAlbum
   aspect={16 / 9}

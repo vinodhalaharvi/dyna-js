@@ -1,5 +1,5 @@
 {
-  "name": "@vinodhalaharvi/react-collage",
+  "name": "@vhalaharvi/react-collage",
   "version": "0.1.0",
   "description": "A React photo collage for 1 to 9 photos: no gaps, little cropping, instant resizing, and a scrapbook style",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@vinodhalaharvi/collage": "^0.1.0"
+    "@vhalaharvi/collage": "^0.1.0"
   },
   "peerDependencies": {
     "react": ">=18"

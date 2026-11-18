@@ -1,6 +1,6 @@
 /**
  * Photo collage layouts as a dynamic program over guillotine cuts, written
- * with @vinodhalaharvi/dyna:
+ * with @vhalaharvi/dyna:
  *
  *   F X       = Leaf photo | Split cut X X        one layout step
  *   coalgebra   {photos} → every way to split them in two

@@ -7,7 +7,7 @@
     "packages/react-collage"
   ],
   "scripts": {
-    "build": "npm run build -w @vinodhalaharvi/dyna -w @vinodhalaharvi/collage -w @vinodhalaharvi/react-collage",
+    "build": "npm run build -w @vhalaharvi/dyna -w @vhalaharvi/collage -w @vhalaharvi/react-collage",
     "test": "vitest run",
     "typecheck": "tsc -b"
   },

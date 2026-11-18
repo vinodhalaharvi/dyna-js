@@ -1,15 +1,15 @@
-# @vinodhalaharvi/react-collage
+# @vhalaharvi/react-collage
 
 A React photo collage for 1 to 9 photos. Every photo keeps its shape, there
 are no gaps, and very little is cropped. Every canvas shape is solved up
 front, so resizing is instant.
 
 ```sh
-npm install @vinodhalaharvi/react-collage
+npm install @vhalaharvi/react-collage
 ```
 
 ```tsx
-import { CollageAlbum } from "@vinodhalaharvi/react-collage";
+import { CollageAlbum } from "@vhalaharvi/react-collage";
 
 const photos = [
   { src: "/beach.jpg", width: 1600, height: 900, alt: "Beach" },

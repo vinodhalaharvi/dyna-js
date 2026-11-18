@@ -1,4 +1,4 @@
-# @vinodhalaharvi/dyna
+# @vhalaharvi/dyna
 
 Dynamic programming as recursion schemes over semirings. No dependencies.
 
@@ -16,7 +16,7 @@ correct exactly when the algebra distributes over ⊕, which `checkLaws` tests
 and `bruteForce` confirms.
 
 ```ts
-import { bruteForce, count, dyna, ungraded, type Coalgebra } from "@vinodhalaharvi/dyna";
+import { bruteForce, count, dyna, ungraded, type Coalgebra } from "@vhalaharvi/dyna";
 
 // How many ordered ways to make an amount from coins 1, 2 and 5?
 const coins: Coalgebra<number, number> = (a) =>

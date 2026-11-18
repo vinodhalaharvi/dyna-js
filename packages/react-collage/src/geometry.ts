@@ -1,4 +1,4 @@
-import { clampAspect, fracL, type Layout, type LayoutNode } from "@vinodhalaharvi/collage";
+import { clampAspect, fracL, type Layout, type LayoutNode } from "@vhalaharvi/collage";
 
 /** One photo's place on the canvas, in pixels. */
 export interface Cell {

@@ -4,6 +4,18 @@ A React photo collage for 1 to 9 photos. Every photo keeps its shape, there
 are no gaps, and very little is cropped. Every canvas shape is solved up
 front, so resizing is instant.
 
+![Seven photos in the grid style](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/grid.jpg)
+
+`variant="scrapbook"`, with two photos marked `shape: "round"`:
+
+![The same photos in the scrapbook style](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/scrapbook.jpg)
+
+Dragging the album from wide to tall: each step is a table lookup.
+
+![The layout changing as the album is resized](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/resize.webp)
+
+<sub>Photos: [max-mapper/cats](https://github.com/max-mapper/cats), BSD licensed ([credits](https://github.com/vinodhalaharvi/dyna-js/blob/main/docs/CATS.md)).</sub>
+
 ```sh
 npm install @vhalaharvi/react-collage
 ```

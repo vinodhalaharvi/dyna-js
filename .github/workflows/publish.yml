@@ -28,7 +28,11 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - name: Publish what is new
+        env:
+          # npm says here whether it signed in through trusted publishing
+          NPM_CONFIG_LOGLEVEL: verbose
         run: |
+          npm -v
           for p in dyna collage react-collage; do
             name=$(node -p "require('./packages/$p/package.json').name")
             version=$(node -p "require('./packages/$p/package.json').version")

@@ -1,6 +1,6 @@
 name: publish
 
-# Publishes the three packages to npm, in dependency order, with provenance.
+# Publishes the packages to npm, in dependency order, with provenance.
 # A package whose version is already on npm is skipped, so bump "version" in
 # its package.json (and the ranges that depend on it) before running this.
 # There is no stored token: each package has this workflow as its trusted
@@ -33,7 +33,7 @@ jobs:
           NPM_CONFIG_LOGLEVEL: verbose
         run: |
           npm -v
-          for p in dyna collage react-collage; do
+          for p in dyna collage react-collage eqsum react-eqsum; do
             name=$(node -p "require('./packages/$p/package.json').name")
             version=$(node -p "require('./packages/$p/package.json').version")
             if npm view "$name@$version" version >/dev/null 2>&1; then

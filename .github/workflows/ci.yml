@@ -22,4 +22,4 @@ jobs:
       - run: npm test
       - name: Every package packs
         run: |
-          for p in dyna collage react-collage; do (cd packages/$p && npm pack --dry-run); done
+          for p in dyna collage react-collage eqsum react-eqsum; do (cd packages/$p && npm pack --dry-run); done

@@ -4,10 +4,12 @@
   "workspaces": [
     "packages/dyna",
     "packages/collage",
-    "packages/react-collage"
+    "packages/react-collage",
+    "packages/eqsum",
+    "packages/react-eqsum"
   ],
   "scripts": {
-    "build": "npm run build -w @vhalaharvi/dyna -w @vhalaharvi/collage -w @vhalaharvi/react-collage",
+    "build": "npm run build -w @vhalaharvi/dyna -w @vhalaharvi/collage -w @vhalaharvi/react-collage -w @vhalaharvi/eqsum -w @vhalaharvi/react-eqsum",
     "test": "vitest run",
     "typecheck": "tsc -b"
   },
@@ -19,6 +21,7 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "pdfjs-dist": "^6.5.438"
   }
 }

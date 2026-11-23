@@ -1,6 +1,6 @@
 {
   "name": "@vhalaharvi/eqsum",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Summaries of typeset books that keep the equations: an N-page summary chosen with dynamic programming, equations weighted most",
   "license": "MIT",
   "author": "Vinod Halaharvi",

@@ -11,6 +11,7 @@ import { readBook } from "@vhalaharvi/eqsum";
 const doc = await pdfjs.getDocument({ url: "book.pdf", fontExtraProperties: true }).promise;
 const book = await readBook(doc, pdfjs.OPS, { maxPages: 40 });
 const s = book.summary(20); // pages of { page, clip, at }: draw each clip of its source page at `at`
+const all = book.extract(); // every equation with its text and headings, however many pages
 ```
 
 **How it chooses.** The book is read into units (display equations, paragraphs, code, figures and

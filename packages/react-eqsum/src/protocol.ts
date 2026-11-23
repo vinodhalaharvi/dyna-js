@@ -3,7 +3,8 @@ import { bookFrom, type Book, type Margins, type PageContent, type Placement, ty
 
 export type ToSolver =
   | { type: "solve"; pages: [number, PageContent][]; toc: TocEntry[]; numPages: number; maxPages: number; weights: Partial<Weights> }
-  | { type: "summary"; id: number; pages: number };
+  /** a length in pages, or "all": every equation with its text, however long */
+  | { type: "summary"; id: number; pages: number | "all" };
 
 export type FromSolver =
   | { type: "solved"; units: Unit[]; margins: Margins; maxPages: number; ms: number }
@@ -21,7 +22,7 @@ export function solver(): (m: ToSolver) => FromSolver[] {
         return [{ type: "solved", units: book.units, margins: book.margins, maxPages: book.maxPages, ms: Date.now() - t }];
       }
       if (!book) return [{ type: "error", message: "not solved yet" }];
-      const s = book.summary(m.pages);
+      const s = m.pages === "all" ? book.extract() : book.summary(m.pages);
       return [{ type: "summary", id: m.id, pages: s.pages, equations: s.equations, regions: s.units.length }];
     } catch (e) {
       return [{ type: "error", message: e instanceof Error ? e.message : String(e) }];

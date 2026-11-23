@@ -44,8 +44,8 @@ export interface Options {
 
 type Source = string | URL | ArrayBuffer | Uint8Array | Blob;
 
-/** Reads and solves a book; `summary(n)` then answers each length (the slider) at once. */
-export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: number, opts: Options = {}) {
+/** Reads and solves a book; then answers each length (the slider) at once, or "all": every equation with its text. */
+export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: number | "all", opts: Options = {}) {
   const [progress, setProgress] = useState<Progress>({ stage: "loading", done: 0, total: 1 });
   const [solved, setSolved] = useState<Solved | null>(null);
   const [summary, setSummary] = useState<SummaryPages | null>(null);

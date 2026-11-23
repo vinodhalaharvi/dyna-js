@@ -1,6 +1,6 @@
 {
   "name": "@vhalaharvi/react-eqsum",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A React viewer that summarises a typeset PDF to N pages, keeping the equations: a slider for the length, the whole book a click away",
   "license": "MIT",
   "author": "Vinod Halaharvi",

@@ -94,7 +94,9 @@ export function Region({ doc, page, clip, scale, pageHeight, textLayer, style, c
       text.current.replaceChildren();
       text.current.style.setProperty("--total-scale-factor", String(scale));
       text.current.style.setProperty("--scale-factor", String(scale));
-      const layer = new textLayer({ textContentSource: { ...tc, items: inside }, container: text.current, viewport: p.getViewport({ scale, offsetX: -clip.x0 * scale, offsetY: -clip.y0 * scale }) });
+      // pdf.js places text in percentages of the whole page, so the layer is the whole page,
+      // shifted so that the region's corner sits at the box's corner (the box clips the rest)
+      const layer = new textLayer({ textContentSource: { ...tc, items: inside }, container: text.current, viewport: p.getViewport({ scale }) });
       tl = layer;
       await layer.render().catch(() => undefined);
     })();
@@ -108,7 +110,7 @@ export function Region({ doc, page, clip, scale, pageHeight, textLayer, style, c
   return (
     <div ref={box} className={className} style={{ position: "absolute", width: w, height: h, overflow: "hidden", ...style }}>
       <canvas ref={canvas} style={{ width: w, height: h, display: "block" }} />
-      {textLayer ? <div ref={text} className="textLayer" style={{ width: w, height: h }} /> : null}
+      {textLayer ? <div ref={text} className="textLayer" style={{ left: -clip.x0 * scale, top: -clip.y0 * scale }} /> : null}
     </div>
   );
 }

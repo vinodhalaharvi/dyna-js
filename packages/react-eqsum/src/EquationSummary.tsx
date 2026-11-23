@@ -34,7 +34,7 @@ const CSS = `
 .eqs-progress{width:min(360px,80%);height:4px;margin:12px auto 0;background:var(--eqs-line);border-radius:2px;overflow:hidden}
 .eqs-progress>div{height:100%;background:var(--eqs-accent);transition:width .2s}
 .eqs-focus{outline:2px solid var(--eqs-accent);outline-offset:4px}
-.eqs .textLayer{position:absolute;inset:0;overflow:clip;opacity:1;line-height:1;text-align:initial;transform-origin:0 0;z-index:1;--min-font-size:1;--text-scale-factor:calc(var(--total-scale-factor)*var(--min-font-size));--min-font-size-inv:calc(1/var(--min-font-size))}
+.eqs .textLayer{position:absolute;left:0;top:0;--scale-round-x:1px;--scale-round-y:1px;overflow:clip;opacity:1;line-height:1;text-align:initial;transform-origin:0 0;z-index:1;--min-font-size:1;--text-scale-factor:calc(var(--total-scale-factor)*var(--min-font-size));--min-font-size-inv:calc(1/var(--min-font-size))}
 .eqs .textLayer :is(span,br){color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0 0}
 .eqs .textLayer>:not(.markedContent),.eqs .textLayer .markedContent span:not(.markedContent){z-index:1;--font-height:0;font-size:calc(var(--text-scale-factor)*var(--font-height));--scale-x:1;--rotate:0deg;transform:rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv))}
 .eqs .textLayer .markedContent{display:contents}

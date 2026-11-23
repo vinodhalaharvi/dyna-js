@@ -1,10 +1,10 @@
 # react-eqsum demo
 
-A 300-page math book cut down to a summary of 1 to 40 pages that is built around its equations. Equations count most, the sentences around them next, and other prose least.
+A 300-page math book cut down to a summary of 1 to 40 pages that is built around its equations, or to every equation with its text (**All pages**). Equations count most, the sentences around them next, and other prose least.
 
-[![Watch the 40-second demo](media/poster.jpg)](media/eqsum-demo.mp4)
+[![Watch the 36-second demo](media/poster.jpg)](media/eqsum-demo.mp4)
 
-▶ [Watch the 40-second demo](media/eqsum-demo.mp4) (MP4, 1080p, no sound)
+▶ [Watch the 36-second demo](media/eqsum-demo.mp4) (MP4, 1080p, no sound)
 
 What the video shows:
 

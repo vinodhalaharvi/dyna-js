@@ -1,4 +1,5 @@
-// The viewer: a slider for the summary's length, a switch for the whole book, and the pages.
+// The viewer: a slider for the summary's length, a switch for every equation with its text, and
+// the pages; each passage links to its page in the book.
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { Region } from "./Region.js";
 import { useEquationSummary, type Options, type PdfJs } from "./useEquationSummary.js";
@@ -10,7 +11,7 @@ export interface EquationSummaryProps extends Options {
   source: string | URL | ArrayBuffer | Uint8Array | Blob | null;
   /** the length to start at */
   defaultPages?: number;
-  /** start showing the whole book */
+  /** start with every equation and its text, however many pages that takes */
   defaultAllPages?: boolean;
   /** widest a page is drawn, in CSS pixels */
   maxWidth?: number;
@@ -34,6 +35,8 @@ const CSS = `
 .eqs-progress{width:min(360px,80%);height:4px;margin:12px auto 0;background:var(--eqs-line);border-radius:2px;overflow:hidden}
 .eqs-progress>div{height:100%;background:var(--eqs-accent);transition:width .2s}
 .eqs-focus{outline:2px solid var(--eqs-accent);outline-offset:4px}
+.eqs-back{font:inherit;padding:4px 10px;border:1px solid var(--eqs-line);border-radius:6px;background:#fff;cursor:pointer}
+.eqs-back:hover{border-color:var(--eqs-accent);color:var(--eqs-accent)}
 .eqs .textLayer{position:absolute;left:0;top:0;--scale-round-x:1px;--scale-round-y:1px;overflow:clip;opacity:1;line-height:1;text-align:initial;transform-origin:0 0;z-index:1;--min-font-size:1;--text-scale-factor:calc(var(--total-scale-factor)*var(--min-font-size));--min-font-size-inv:calc(1/var(--min-font-size))}
 .eqs .textLayer :is(span,br){color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0 0}
 .eqs .textLayer>:not(.markedContent),.eqs .textLayer .markedContent span:not(.markedContent){z-index:1;--font-height:0;font-size:calc(var(--text-scale-factor)*var(--font-height));--scale-x:1;--rotate:0deg;transform:rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv))}
@@ -73,20 +76,21 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, defaultAllPa
   const width = useWidth(root, maxWidth);
   const [n, setN] = useState(defaultPages);
   const [all, setAll] = useState(defaultAllPages);
+  // a page of the book opened from a passage's p. N, or null
   const [focus, setFocus] = useState<number | null>(null);
-  const { progress, solved, summary } = useEquationSummary(pdfjs, source, n, opts);
+  const { progress, solved, summary } = useEquationSummary(pdfjs, source, all ? "all" : n, opts);
   const textLayer = (pdfjs.TextLayer ?? null) as never;
 
   useEffect(() => {
     if (solved && n > solved.maxPages) setN(solved.maxPages);
   }, [solved, n]);
 
-  // the whole book, opened at a page
+  // the book, opened at a page
   useEffect(() => {
-    if (!all || focus === null) return;
+    if (focus === null) return;
     const t = setTimeout(() => document.getElementById(`eqs-page-${focus}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     return () => clearTimeout(t);
-  }, [all, focus]);
+  }, [focus]);
 
   if (!solved) {
     const pct = progress.total ? Math.round((100 * progress.done) / progress.total) : 0;
@@ -110,44 +114,61 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, defaultAllPa
   const eqs = solved.units.filter((u) => u.kind === "display").length;
   const right = 2 * solved.margins.center - solved.margins.left;
 
+  const length = all ? (summary?.pages.length ?? 0) : Math.min(n, solved.maxPages);
+
+  if (focus !== null)
+    return (
+      <div ref={root} className={["eqs", className].filter(Boolean).join(" ")} style={style}>
+        <div className="eqs-bar">
+          <button type="button" className="eqs-back" onClick={() => setFocus(null)}>
+            ← Back to the summary
+          </button>
+          <span className="eqs-stats">
+            The book, at page {focus + 1} of {solved.numPages}
+          </span>
+        </div>
+        <div className="eqs-pages">
+          {Array.from({ length: solved.numPages }, (_, i) => (
+            <div key={i} id={`eqs-page-${i}`} className={"eqs-sheet" + (focus === i ? " eqs-focus" : "")} style={sheet}>
+              <Region doc={solved.doc} page={i} clip={{ x0: 0, y0: 0, x1: solved.width, y1: solved.height }} scale={scale} pageHeight={solved.height} textLayer={textLayer} style={{ left: 0, top: 0 }} />
+              <div className="eqs-foot" style={{ bottom: 10 * scale }}>{i + 1}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+
   return (
     <div ref={root} className={["eqs", className].filter(Boolean).join(" ")} style={style}>
       <div className="eqs-bar">
         <label>
           Summary
           <input type="range" min={1} max={solved.maxPages} value={Math.min(n, solved.maxPages)} disabled={all} onChange={(e) => setN(+e.target.value)} aria-label="Summary length in pages" />
-          <span className="eqs-n">{all ? `${solved.numPages} pages` : `${Math.min(n, solved.maxPages)} page${n === 1 ? "" : "s"}`}</span>
+          <span className="eqs-n">{all && !summary ? "" : `${length} page${length === 1 ? "" : "s"}`}</span>
         </label>
         <label>
-          <input type="checkbox" checked={all} onChange={(e) => { setAll(e.target.checked); setFocus(null); }} /> All pages
+          <input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} /> All pages
         </label>
         <span className="eqs-stats">
-          {all ? `the whole book: ${eqs} equations` : summary ? `${summary.equations} of ${eqs} equations, ${summary.regions} passages from ${solved.numPages} pages` : ""}
+          {summary ? `${all ? "all " : ""}${summary.equations}${all ? "" : ` of ${eqs}`} equations, ${summary.regions} passages from ${solved.numPages} pages` : ""}
         </span>
       </div>
       <div className="eqs-pages">
-        {all
-          ? Array.from({ length: solved.numPages }, (_, i) => (
-              <div key={i} id={`eqs-page-${i}`} className={"eqs-sheet" + (focus === i ? " eqs-focus" : "")} style={sheet}>
-                <Region doc={solved.doc} page={i} clip={{ x0: 0, y0: 0, x1: solved.width, y1: solved.height }} scale={scale} pageHeight={solved.height} textLayer={textLayer} style={{ left: 0, top: 0 }} />
-                <div className="eqs-foot" style={{ bottom: 10 * scale }}>{i + 1}</div>
-              </div>
-            ))
-          : (summary?.pages ?? []).map((pg, k) => (
-              <div key={`${n}-${k}`} className="eqs-sheet" style={sheet}>
-                {pg.map((p) => (
-                  <div key={p.unit}>
-                    <Region doc={solved.doc} page={p.page} clip={p.clip} scale={scale * ((p.at.y1 - p.at.y0) / (p.clip.y1 - p.clip.y0))} pageHeight={solved.height} textLayer={textLayer} style={{ left: p.at.x0 * scale, top: p.at.y0 * scale }} />
-                    <button type="button" className="eqs-ref" style={{ left: (right + 18) * scale, top: p.at.y0 * scale + 2 }} title={`Open page ${p.page + 1} of the book`} onClick={() => { setAll(true); setFocus(p.page); }}>
-                      p. {p.page + 1}
-                    </button>
-                  </div>
-                ))}
-                <div className="eqs-foot" style={{ bottom: 18 * scale }}>
-                  Summary, page {k + 1} of {summary!.pages.length}
-                </div>
+        {(summary?.pages ?? []).map((pg, k) => (
+          <div key={`${all ? "all" : n}-${k}`} className="eqs-sheet" style={sheet}>
+            {pg.map((p) => (
+              <div key={p.unit}>
+                <Region doc={solved.doc} page={p.page} clip={p.clip} scale={scale * ((p.at.y1 - p.at.y0) / (p.clip.y1 - p.clip.y0))} pageHeight={solved.height} textLayer={textLayer} style={{ left: p.at.x0 * scale, top: p.at.y0 * scale }} />
+                <button type="button" className="eqs-ref" style={{ left: (right + 18) * scale, top: p.at.y0 * scale + 2 }} title={`Open page ${p.page + 1} of the book`} onClick={() => setFocus(p.page)}>
+                  p. {p.page + 1}
+                </button>
               </div>
             ))}
+            <div className="eqs-foot" style={{ bottom: 18 * scale }}>
+              Summary, page {k + 1} of {summary!.pages.length}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

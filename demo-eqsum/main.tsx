@@ -16,7 +16,7 @@ function App() {
           A {""}
           <b>{name}</b> summary that keeps the equations. Equations count most, the text around them next, other prose least; the
           pages are chosen with dynamic programming and drawn straight from the book, so nothing is re-typed. Drag for a longer or
-          shorter summary; tick <i>All pages</i> for the whole book, or click a <i>p. N</i> to open its source page.
+          shorter summary; tick <i>All pages</i> for every equation with its text, or click a <i>p. N</i> to open its source page.
         </p>
         <label className="open">
           Open your own typeset PDF <input type="file" accept="application/pdf" onChange={(e) => e.target.files?.[0] && setSource(e.target.files[0])} />

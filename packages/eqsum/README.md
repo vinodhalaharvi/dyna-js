@@ -13,6 +13,15 @@ const book = await readBook(doc, pdfjs.OPS); // every length, up to the whole bo
 const s = book.summary(20); // pages of { page, clip, at }: draw each clip of its source page at `at`
 ```
 
+**As a PDF.** `@vhalaharvi/eqsum/export` (with [pdf-lib](https://pdf-lib.js.org)) turns a summary
+into a PDF file. Each passage is its source page, clipped and placed, not a picture of it. The text
+outside each passage is removed from its copy of the page, so the file's text is what it shows.
+
+```ts
+import { summaryPdf } from "@vhalaharvi/eqsum/export";
+const bytes = await summaryPdf(pdfBytes, s.pages, { width: book.width, height: book.height });
+```
+
 **What matters most.** An equation the rest of the book relies on is worth more. Three kinds of
 link are read:
 - references to numbered equations: "(3.2)", "equation 3.2", "eq. (3.2)", and 式(3.2) in Chinese;

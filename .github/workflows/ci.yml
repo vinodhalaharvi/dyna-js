@@ -23,3 +23,8 @@ jobs:
       - name: Every package packs
         run: |
           for p in dyna collage react-collage eqsum react-eqsum; do (cd packages/$p && npm pack --dry-run); done
+      - name: The Chrome extension builds and type-checks
+        run: |
+          npm run build
+          npx tsc -p chrome-eqsum/tsconfig.json
+          sh chrome-eqsum/build.sh

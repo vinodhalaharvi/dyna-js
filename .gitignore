@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.tsbuildinfo
 demo/demo.js
+chrome-eqsum/equation-summary.zip

@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { Region } from "./Region.js";
 import { useEquationSummary, type Options, type PdfJs } from "./useEquationSummary.js";
+import type { Placement } from "@vhalaharvi/eqsum";
 
 export interface EquationSummaryProps extends Options {
   /** pdf.js: `import * as pdfjs from "pdfjs-dist"` (with its worker set up) */
@@ -11,6 +12,8 @@ export interface EquationSummaryProps extends Options {
   source: string | URL | ArrayBuffer | Uint8Array | Blob | null;
   /** the length to start at */
   defaultPages?: number;
+  /** the downloaded file's name, without ".pdf" (default: the book's own name, then "summary") */
+  fileName?: string;
   /** widest a page is drawn, in CSS pixels */
   maxWidth?: number;
   className?: string;
@@ -71,7 +74,7 @@ function useWidth(ref: React.RefObject<HTMLElement | null>, max: number) {
   return Math.max(200, w);
 }
 
-export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 820, className, style, ...opts }: EquationSummaryProps) {
+export function EquationSummary({ pdfjs, source, defaultPages = 20, fileName, maxWidth = 820, className, style, ...opts }: EquationSummaryProps) {
   useStyles();
   const root = useRef<HTMLDivElement>(null);
   const width = useWidth(root, maxWidth);
@@ -80,6 +83,7 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 8
   const [focus, setFocus] = useState<number | null>(null);
   const { progress, solved, summary } = useEquationSummary(pdfjs, source, n, opts);
   const textLayer = (pdfjs.TextLayer ?? null) as never;
+  const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
     if (solved && n > solved.maxPages) setN(solved.maxPages);
@@ -155,6 +159,10 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 8
         <span className="eqs-stats">
           {summary ? `${summary.equations} of ${eqs} equations, ${summary.regions} passages from ${solved.numPages} pages` : ""}
         </span>
+        <button type="button" className="eqs-back" disabled={!summary || saving === "busy"} onClick={() => summary && download(solved.doc, summary.pages, solved.width, solved.height, `${fileName ?? nameOf(source)}-summary-${summary.pages.length}p`, setSaving)}>
+          {saving === "busy" ? "Making the PDF…" : "Download PDF"}
+        </button>
+        {saving && saving !== "busy" ? <span className="eqs-stats">{saving}</span> : null}
       </div>
       <div className="eqs-pages">
         {(summary?.pages ?? []).map((pg, k) => (
@@ -175,4 +183,31 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 8
       </div>
     </div>
   );
+}
+
+/** The book's own name, from a File or a URL, else "summary". */
+function nameOf(source: EquationSummaryProps["source"]): string {
+  const raw = typeof File !== "undefined" && source instanceof File ? source.name : typeof source === "string" || source instanceof URL ? decodeURIComponent(String(source).split(/[?#]/)[0]!.split("/").pop() ?? "") : "";
+  return raw.replace(/\.pdf$/i, "").replace(/[^\p{L}\p{N}._-]+/gu, "-").replace(/^-+|-+$/g, "") || "summary";
+}
+
+/** The summary as a PDF file, made from the book's own pages, saved by the browser. */
+async function download(doc: unknown, pages: Placement[][], width: number, height: number, name: string, say: (s: string | null) => void) {
+  say("busy");
+  try {
+    const { summaryPdf } = await import("@vhalaharvi/eqsum/export");
+    const data = await (doc as { getData(): Promise<Uint8Array> }).getData();
+    const pdf = await summaryPdf(data, pages, { width, height, title: name });
+    const url = URL.createObjectURL(new Blob([pdf as BlobPart], { type: "application/pdf" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${name}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    say(null);
+  } catch (e) {
+    say(`Could not make the PDF: ${e instanceof Error ? e.message : String(e)}`);
+  }
 }

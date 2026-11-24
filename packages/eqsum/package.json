@@ -1,6 +1,6 @@
 {
   "name": "@vhalaharvi/eqsum",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Summaries of typeset books that keep the equations: an N-page summary chosen with dynamic programming, equations weighted most",
   "license": "MIT",
   "author": "Vinod Halaharvi",
@@ -17,6 +17,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./export": {
+      "types": "./dist/export.d.ts",
+      "import": "./dist/export.js"
     }
   },
   "files": [
@@ -30,7 +34,8 @@
     "prepublishOnly": "tsc -b"
   },
   "dependencies": {
-    "@vhalaharvi/dyna": "^0.1.0"
+    "@vhalaharvi/dyna": "^0.1.0",
+    "pdf-lib": "^1.17.1"
   },
   "engines": {
     "node": ">=18"

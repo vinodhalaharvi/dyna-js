@@ -24,6 +24,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.m
 - **Each region's text layer holds only its own text**, so selecting and searching see exactly what
   is shown.
 - **Solving runs in the worker** if you pass one (recommended), otherwise on the page's thread.
+- **Download PDF** saves the summary at its current length as a PDF of its own, made from the
+  book's pages: the mathematics stays vector-sharp, and its text can be selected and searched (only
+  what is shown; the text around each passage is taken out, not just hidden). `fileName` names it.
 - `useEquationSummary` and `Region` are exported for your own layout.
 - **What counts most is worked out from the book itself**: equations count most, then the text
   around them, and an equation the rest of the book refers to counts more (see

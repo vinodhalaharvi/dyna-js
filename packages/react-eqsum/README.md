@@ -1,8 +1,9 @@
 # @vhalaharvi/react-eqsum
 
 A React viewer that summarises a typeset PDF to N pages and keeps the equations. A slider sets the
-length (instantly: the book is solved once), **All pages** shows every equation with its text and
-headings, however many pages that takes, and each region's *p. N* opens the book at its source page.
+length from one page to the whole book (instantly: the book is solved once, for every length), and
+each region's *p. N* opens the book at its source page. Solving takes a while for a long book; a
+spinner says so meanwhile.
 
 ```tsx
 import * as pdfjs from "pdfjs-dist";
@@ -14,7 +15,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.m
   pdfjs={pdfjs}
   source={fileOrUrl}
   defaultPages={20}
-  maxPages={40}
   worker={() => new Worker(new URL("@vhalaharvi/react-eqsum/worker", import.meta.url), { type: "module" })}
 />
 ```

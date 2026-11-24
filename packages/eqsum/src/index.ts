@@ -26,13 +26,11 @@ export interface Book {
   toc: TocEntry[];
   maxPages: number;
   /** the summary in `pages` pages (or fewer): its pages of placements, and what it holds */
-  summary(pages: number): Extract;
-  /** every equation with the text around it and the headings over it, however many pages that takes */
-  extract(): Extract;
+  summary(pages: number): SummaryPages;
 }
 
 /** Pages of placements, with the equations and the units they hold. */
-export interface Extract {
+export interface SummaryPages {
   pages: Placement[][];
   equations: number;
   units: number[];
@@ -40,7 +38,7 @@ export interface Extract {
 
 export interface ReadOptions {
   weights?: Partial<Weights>;
-  /** the longest summary to prepare (the slider's end); longer takes longer to solve */
+  /** the longest summary to prepare (the slider's end): the whole book unless set lower, which solves faster */
   maxPages?: number;
   onProgress?: (done: number, total: number, stage: "reading" | "choosing") => void;
 }
@@ -65,7 +63,7 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
   const units = unitsOf(pages, toc, margins);
   const geo: Geometry = { width: first.width, height: first.height, top: 72, bottom: first.height - 72 };
   const usable = geo.bottom - geo.top;
-  const maxPages = Math.max(1, Math.min(opts.maxPages ?? 40, numPages));
+  const maxPages = Math.max(1, Math.min(opts.maxPages ?? numPages, numPages));
   opts.onProgress?.(0, 1, "choosing");
   // what the book refers to, and how much each equation matters for it
   const ls = links(units);
@@ -73,9 +71,7 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
   const chapters = structure(units, w, imp);
   const solved = solve(units, chapters, Math.floor((maxPages * usable * 0.95) / QUANTUM), w);
   opts.onProgress?.(1, 1, "choosing");
-  const cache = new Map<number, Extract>();
-  const laidOut = (chosen: number[]): Extract => ({ pages: chosen.length ? place(chosen, units, margins, geo) : [], units: chosen, equations: chosen.filter((i) => units[i]!.kind === "display").length });
-  let everything: Extract | null = null;
+  const cache = new Map<number, SummaryPages>();
   return {
     numPages,
     width: geo.width,
@@ -93,7 +89,7 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
       // plan for a share of each page, and shrink the plan until the layout fits n pages (page
       // breaks waste some space): every plan is a lookup in the solved book
       let fill = 0.95;
-      let out: Extract = { pages: [], equations: 0, units: [] };
+      let out: SummaryPages = { pages: [], equations: 0, units: [] };
       for (let attempt = 0; attempt < 12; attempt++) {
         const s = solved.best((n * usable * fill) / QUANTUM);
         const laid = s ? place(s.units, units, margins, geo) : [];
@@ -103,21 +99,6 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
       }
       cache.set(n, out);
       return out;
-    },
-    extract() {
-      if (everything) return everything;
-      // each equation with all the text that belongs to it, and the headings it sits under
-      const chosen = new Set<number>();
-      for (const c of chapters)
-        for (const s of c.sections)
-          for (const it of s.items) {
-            const full = it.options[it.options.length - 1]!;
-            if (!full.units.some((i) => units[i]!.kind === "display")) continue;
-            for (const i of full.units) chosen.add(i);
-            for (const h of [c.heading, s.heading, it.sub]) if (h >= 0) chosen.add(h);
-          }
-      everything = laidOut([...chosen].sort((a, b) => a - b));
-      return everything;
     },
   };
 }

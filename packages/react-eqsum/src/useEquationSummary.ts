@@ -35,16 +35,14 @@ export interface SummaryPages {
 }
 
 export interface Options {
-  /** the longest summary to prepare: the slider's end */
-  maxPages?: number;
   /** makes the solver's worker; without one, solving runs on the page's thread */
   worker?: () => Worker;
 }
 
 type Source = string | URL | ArrayBuffer | Uint8Array | Blob;
 
-/** Reads and solves a book; then answers each length (the slider) at once, or "all": every equation with its text. */
-export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: number | "all", opts: Options = {}) {
+/** Reads and solves a book for every length up to the whole of it; then answers each length (the slider) at once. */
+export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: number, opts: Options = {}) {
   const [progress, setProgress] = useState<Progress>({ stage: "loading", done: 0, total: 1 });
   const [solved, setSolved] = useState<Solved | null>(null);
   const [summary, setSummary] = useState<SummaryPages | null>(null);
@@ -82,7 +80,7 @@ export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: n
         if (cancelled || !read.length) return;
         setProgress({ stage: "choosing", done: 0, total: 1 });
         const size: [number, number] = [read[0]![1].width, read[0]![1].height];
-        const msg: ToSolver = { type: "solve", pages: read, toc, numPages: doc.numPages, maxPages: Math.min(opts.maxPages ?? 40, doc.numPages) };
+        const msg: ToSolver = { type: "solve", pages: read, toc, numPages: doc.numPages, maxPages: doc.numPages };
         if (opts.worker) {
           worker = opts.worker();
           worker.onmessage = (e: MessageEvent<FromSolver>) => onReply(e.data, doc, doc.numPages, size);
@@ -102,9 +100,9 @@ export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: n
       worker?.terminate();
       send.current = null;
     };
-    // a new book when the source or the longest length changes
+    // a new book when the source changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, opts.maxPages]);
+  }, [source]);
 
   useEffect(() => {
     if (!solved || !send.current) return;

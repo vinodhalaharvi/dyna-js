@@ -4,6 +4,10 @@ Summaries of typeset (LaTeX) books that keep the equations. Give it a PDF and a 
 what goes in, with equations counting most, the text around them next and other prose least, and
 lays it out on pages. Nothing is re-typed: the summary is made of regions of the source pages.
 
+[![Watch the 30-second video](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/demo-eqsum/media/promo.jpg)](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
+▶ [Watch the 30-second video on YouTube](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
 ```ts
 import * as pdfjs from "pdfjs-dist";
 import { readBook } from "@vhalaharvi/eqsum";

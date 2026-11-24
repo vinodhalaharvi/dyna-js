@@ -25,3 +25,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.m
   is shown.
 - **Solving runs in the worker** if you pass one (recommended), otherwise on the page's thread.
 - `useEquationSummary` and `Region` are exported for your own layout.
+- **What counts most is worked out from the book itself**: equations count most, then the text
+  around them, and an equation the rest of the book refers to counts more (see
+  [@vhalaharvi/eqsum](../eqsum)). There are no weights to set here. From 0.3.0 the `weights` option
+  is gone; use `@vhalaharvi/eqsum` directly to change them.

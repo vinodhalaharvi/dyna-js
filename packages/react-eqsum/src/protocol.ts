@@ -1,8 +1,8 @@
 // Messages between the component and the solver (a Web Worker, or the same thread).
-import { bookFrom, type Book, type Margins, type PageContent, type Placement, type TocEntry, type Unit, type Weights } from "@vhalaharvi/eqsum";
+import { bookFrom, type Book, type Margins, type PageContent, type Placement, type TocEntry, type Unit } from "@vhalaharvi/eqsum";
 
 export type ToSolver =
-  | { type: "solve"; pages: [number, PageContent][]; toc: TocEntry[]; numPages: number; maxPages: number; weights: Partial<Weights> }
+  | { type: "solve"; pages: [number, PageContent][]; toc: TocEntry[]; numPages: number; maxPages: number }
   /** a length in pages, or "all": every equation with its text, however long */
   | { type: "summary"; id: number; pages: number | "all" };
 
@@ -18,7 +18,7 @@ export function solver(): (m: ToSolver) => FromSolver[] {
     try {
       if (m.type === "solve") {
         const t = Date.now();
-        book = bookFrom(new Map(m.pages), m.toc, m.numPages, { maxPages: m.maxPages, weights: m.weights });
+        book = bookFrom(new Map(m.pages), m.toc, m.numPages, { maxPages: m.maxPages });
         return [{ type: "solved", units: book.units, margins: book.margins, maxPages: book.maxPages, ms: Date.now() - t }];
       }
       if (!book) return [{ type: "error", message: "not solved yet" }];

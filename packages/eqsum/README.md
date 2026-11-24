@@ -14,6 +14,21 @@ const s = book.summary(20); // pages of { page, clip, at }: draw each clip of it
 const all = book.extract(); // every equation with its text and headings, however many pages
 ```
 
+**What matters most.** An equation the rest of the book relies on is worth more. Three kinds of
+link are read:
+- references to numbered equations: "(3.2)", "equation 3.2", "eq. (3.2)", and 式(3.2) in Chinese;
+- citations of numbered results: "by Theorem 4.1" points to the equations stated in it;
+- uses of symbols: an equation that begins by defining something (`f(n) = …`, `A := …`,
+  `ρ : G → V`) is linked from the later equations that use it. A function or a longer name holds
+  for its chapter, and a single letter only for its section. The rarer the symbol, the stronger
+  the link.
+
+Importance flows along the links as in PageRank, restarting in proportion to what each unit is
+worth on its own. An equation nothing refers to keeps its worth, and one much relied on gains, on
+a log scale up to 4×. On the test books, a 12-page summary leaves far fewer symbols without the
+equation that defines them (on the demo book, 68% → 9%). `book.links` and `book.importance` show
+what was found.
+
 **How it chooses.** The book is read into units (display equations, paragraphs, code, figures and
 headings) from its fonts and layout. Then a knapsack over page height is solved with
 [@vhalaharvi/dyna](../dyna) at two levels: each section's best value at every height, then the
@@ -25,7 +40,7 @@ answers every length** up to `maxPages`, so `summary(n)` is a lookup. Rules that
 - Worked examples in numbers count for half a general formula.
 - A heading's height counts only when something under it is chosen.
 
-All of these are `weights`.
+All of these are `weights`, as is how much the links count (`weights.links`: 1, or 0 to ignore them).
 
 Tested against dyna's `bruteForce` on every section small enough to enumerate. Typeset PDFs only:
 a scanned book has no fonts to read.

@@ -120,7 +120,7 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 8
 
   // the pages it takes (at the far end, everything may fit in fewer than the book's own)
   const length = summary ? summary.pages.length : Math.min(n, solved.maxPages);
-  const everything = n >= solved.maxPages;
+  const everything = n >= solved.maxPages && !!summary && summary.equations === solved.units.filter((u) => u.kind === "display").length;
 
   if (focus !== null)
     return (

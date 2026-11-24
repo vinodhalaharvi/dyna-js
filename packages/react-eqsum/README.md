@@ -1,7 +1,7 @@
 # @vhalaharvi/react-eqsum
 
 A React viewer that summarises a typeset PDF to N pages and keeps the equations. A slider sets the
-length from one page to the whole book (instantly: the book is solved once, for every length), and
+length from one page to the whole book, or to 100 pages for a longer one (instantly: the book is solved once, for every length), and
 each region's *p. N* opens the book at its source page. Solving takes a while for a long book; a
 spinner says so meanwhile.
 

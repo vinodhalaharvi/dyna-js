@@ -32,8 +32,9 @@ what was found.
 headings) from its fonts and layout. Then a knapsack over page height is solved with
 [@vhalaharvi/dyna](../dyna) at two levels: each section's best value at every height, then the
 book's chapters and sections over those. Because the book level is graded by height, **one solve
-answers every length**, up to the whole book, so `summary(n)` is a lookup. Solving every length
-takes longer for a long book (about 30 s for 300 pages); `maxPages` sets a lower end to solve faster. Rules that keep it readable:
+answers every length**, up to the whole book or 100 pages (`MAX_PAGES`), so `summary(n)` is a
+lookup. Time and memory grow with that length (a dense 417-page book: about 37 s and 0.9 GB to 100
+pages, 135 s and 1.8 GB to all of it); `maxPages` sets it higher or lower. Rules that keep it readable:
 - Text near an equation counts only with its equation.
 - An equation shown with none of its text is worth less.
 - Each further equation in a section is worth a little less, which spreads the summary across the book.

@@ -13,6 +13,7 @@ import {
   rowsOf,
   sectionProblem,
   structure,
+  MAX_PAGES,
   type Book,
   type PageContent,
   type Run,
@@ -146,8 +147,13 @@ describe.skipIf(!existsSync(BOOK))("a typeset book", () => {
     }
   });
 
-  it("runs to the whole book: at its full length, every equation is in", () => {
-    const whole = bookFrom(pages, toc, numPages, {});
+  it("stops at 100 pages unless asked for more", () => {
+    expect(MAX_PAGES).toBe(100);
+    expect(bookFrom(pages, toc, numPages, {}).maxPages).toBe(Math.min(100, numPages));
+  }, 600_000);
+
+  it("runs to the whole book when asked: at its full length, every equation is in", () => {
+    const whole = bookFrom(pages, toc, numPages, { maxPages: numPages });
     expect(whole.maxPages).toBe(numPages);
     const s = whole.summary(numPages);
     expect(s.equations).toBe(whole.units.filter((u) => u.kind === "display").length);

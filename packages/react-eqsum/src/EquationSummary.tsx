@@ -105,7 +105,7 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 8
               <div className="eqs-progress">
                 <div style={{ width: `${progress.stage === "choosing" ? 100 : pct}%` }} />
               </div>
-              <div className="eqs-note">Every length, up to the whole book, is prepared at once, so the slider is instant afterwards. A long book can take a minute or more.</div>
+              <div className="eqs-note">Every length, up to the whole book or 100 pages, is prepared at once, so the slider is instant afterwards. A long book can take a minute or more.</div>
             </>
           ) : null}
         </div>
@@ -150,7 +150,7 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 8
         <label>
           Summary
           <input type="range" min={1} max={solved.maxPages} value={Math.min(n, solved.maxPages)} onChange={(e) => setN(+e.target.value)} aria-label="Summary length in pages" />
-          <span className="eqs-n">{`${length} page${length === 1 ? "" : "s"}${everything ? ", everything" : ""}`}</span>
+          <span className="eqs-n">{`${length} page${length === 1 ? "" : "s"}${everything ? ", everything" : n >= solved.maxPages && solved.maxPages < solved.numPages ? ` (the longest, of ${solved.numPages})` : ""}`}</span>
         </label>
         <span className="eqs-stats">
           {summary ? `${summary.equations} of ${eqs} equations, ${summary.regions} passages from ${solved.numPages} pages` : ""}

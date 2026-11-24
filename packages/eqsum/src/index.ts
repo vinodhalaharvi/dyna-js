@@ -13,6 +13,13 @@ export { links, importance, type Link, type LinkKind } from "./links.js";
 export { measure, unitsOf, rowsOf, clusters, bodyPages, type Unit, type Kind, type Margins } from "./units.js";
 export { readPage, readToc, type Box, type Run, type PageContent, type TocEntry, type PdfDoc, type Ops } from "./read.js";
 
+/**
+ * The longest summary prepared unless asked for more: solving every length takes time and memory
+ * that grow with it (a dense 417-page book: about 37 s and 0.9 GB to 100 pages, 135 s and 1.8 GB
+ * to the whole book), so a long book's slider stops here.
+ */
+export const MAX_PAGES = 100;
+
 /** A read and solved book: summaries of any length up to `maxPages`, at once. */
 export interface Book {
   numPages: number;
@@ -38,7 +45,7 @@ export interface SummaryPages {
 
 export interface ReadOptions {
   weights?: Partial<Weights>;
-  /** the longest summary to prepare (the slider's end): the whole book unless set lower, which solves faster */
+  /** the longest summary to prepare (the slider's end): the whole book, or MAX_PAGES (100) for a longer one; more takes longer and needs more memory */
   maxPages?: number;
   onProgress?: (done: number, total: number, stage: "reading" | "choosing") => void;
 }
@@ -63,7 +70,7 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
   const units = unitsOf(pages, toc, margins);
   const geo: Geometry = { width: first.width, height: first.height, top: 72, bottom: first.height - 72 };
   const usable = geo.bottom - geo.top;
-  const maxPages = Math.max(1, Math.min(opts.maxPages ?? numPages, numPages));
+  const maxPages = Math.max(1, Math.min(opts.maxPages ?? MAX_PAGES, numPages));
   opts.onProgress?.(0, 1, "choosing");
   // what the book refers to, and how much each equation matters for it
   const ls = links(units);

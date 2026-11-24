@@ -1,6 +1,6 @@
 // Reads a PDF with pdf.js, solves it once (in a worker if given one), then answers any length.
 import { useEffect, useRef, useState } from "react";
-import { bodyPages, readPage, readToc, type Margins, type Ops, type PageContent, type PdfDoc, type Placement, type Unit } from "@vhalaharvi/eqsum";
+import { MAX_PAGES, bodyPages, readPage, readToc, type Margins, type Ops, type PageContent, type PdfDoc, type Placement, type Unit } from "@vhalaharvi/eqsum";
 import { solver, type FromSolver, type ToSolver } from "./protocol.js";
 
 /** The pdf.js the component draws with: `import * as pdfjs from "pdfjs-dist"`. */
@@ -80,7 +80,7 @@ export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: n
         if (cancelled || !read.length) return;
         setProgress({ stage: "choosing", done: 0, total: 1 });
         const size: [number, number] = [read[0]![1].width, read[0]![1].height];
-        const msg: ToSolver = { type: "solve", pages: read, toc, numPages: doc.numPages, maxPages: doc.numPages };
+        const msg: ToSolver = { type: "solve", pages: read, toc, numPages: doc.numPages, maxPages: Math.min(MAX_PAGES, doc.numPages) };
         if (opts.worker) {
           worker = opts.worker();
           worker.onmessage = (e: MessageEvent<FromSolver>) => onReply(e.data, doc, doc.numPages, size);

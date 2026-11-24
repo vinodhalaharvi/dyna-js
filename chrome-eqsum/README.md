@@ -32,6 +32,7 @@ To try it: open `chrome://extensions`, turn on *Developer mode*, choose **Load u
 - **Summary:** Summarise a typeset math PDF to any number of pages, keeping its equations.
 - **Category:** Education
 - **Single purpose:** Summarise a PDF the user chooses into a shorter PDF view that keeps its equations.
-- **Permissions:** *contextMenus*, for "Summarise this PDF" on PDF links. *Optional host access*,
+- **Permissions:** *activeTab*, so the toolbar button can read the address of the PDF it was
+  clicked on. *contextMenus*, for "Summarise this PDF" on PDF links. *Optional host access*,
   requested for one site at a time when the user summarises a PDF from it, to read that PDF.
 - **Data use:** no user data is collected, sent or sold. The PDF is read and summarised in the browser.

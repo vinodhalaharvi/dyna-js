@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Equation Summary",
+  "version": "0.1.0",
+  "description": "Summarise a typeset math PDF to any number of pages, keeping its equations and the text around them.",
+  "action": { "default_title": "Summarise this PDF", "default_icon": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" } },
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["contextMenus"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self'" }
+}

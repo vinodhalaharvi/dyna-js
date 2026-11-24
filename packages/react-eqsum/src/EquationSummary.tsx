@@ -1,5 +1,5 @@
-// The viewer: a slider for the summary's length, a switch for every equation with its text, and
-// the pages; each passage links to its page in the book.
+// The viewer: a slider for the summary's length, from one page to the whole book, and the pages;
+// each passage links to its page in the book.
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { Region } from "./Region.js";
 import { useEquationSummary, type Options, type PdfJs } from "./useEquationSummary.js";
@@ -11,8 +11,6 @@ export interface EquationSummaryProps extends Options {
   source: string | URL | ArrayBuffer | Uint8Array | Blob | null;
   /** the length to start at */
   defaultPages?: number;
-  /** start with every equation and its text, however many pages that takes */
-  defaultAllPages?: boolean;
   /** widest a page is drawn, in CSS pixels */
   maxWidth?: number;
   className?: string;
@@ -24,7 +22,7 @@ const CSS = `
 .eqs-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:10px 12px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--eqs-line)}
 .eqs-bar label{display:flex;align-items:center;gap:8px}
 .eqs-bar input[type=range]{width:min(320px,48vw);accent-color:var(--eqs-accent)}
-.eqs-n{font-variant-numeric:tabular-nums;font-weight:600;min-width:5.5em}
+.eqs-n{font-variant-numeric:tabular-nums;font-weight:600;min-width:5.5em;white-space:nowrap}
 .eqs-stats{color:var(--eqs-muted);font-variant-numeric:tabular-nums}
 .eqs-pages{display:flex;flex-direction:column;align-items:center;gap:18px;padding:18px 0 40px}
 .eqs-sheet{position:relative;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 6px 24px rgba(0,0,0,.06)}
@@ -34,6 +32,9 @@ const CSS = `
 .eqs-status{padding:40px 16px;text-align:center;color:var(--eqs-muted)}
 .eqs-progress{width:min(360px,80%);height:4px;margin:12px auto 0;background:var(--eqs-line);border-radius:2px;overflow:hidden}
 .eqs-progress>div{height:100%;background:var(--eqs-accent);transition:width .2s}
+.eqs-spin{display:inline-block;width:14px;height:14px;margin-right:8px;vertical-align:-2px;border:2px solid var(--eqs-line);border-top-color:var(--eqs-accent);border-radius:50%;animation:eqs-spin .8s linear infinite}
+@keyframes eqs-spin{to{transform:rotate(360deg)}}
+.eqs-note{margin-top:10px;font-size:12px}
 .eqs-focus{outline:2px solid var(--eqs-accent);outline-offset:4px}
 .eqs-back{font:inherit;padding:4px 10px;border:1px solid var(--eqs-line);border-radius:6px;background:#fff;cursor:pointer}
 .eqs-back:hover{border-color:var(--eqs-accent);color:var(--eqs-accent)}
@@ -70,15 +71,14 @@ function useWidth(ref: React.RefObject<HTMLElement | null>, max: number) {
   return Math.max(200, w);
 }
 
-export function EquationSummary({ pdfjs, source, defaultPages = 20, defaultAllPages = false, maxWidth = 820, className, style, ...opts }: EquationSummaryProps) {
+export function EquationSummary({ pdfjs, source, defaultPages = 20, maxWidth = 820, className, style, ...opts }: EquationSummaryProps) {
   useStyles();
   const root = useRef<HTMLDivElement>(null);
   const width = useWidth(root, maxWidth);
   const [n, setN] = useState(defaultPages);
-  const [all, setAll] = useState(defaultAllPages);
   // a page of the book opened from a passage's p. N, or null
   const [focus, setFocus] = useState<number | null>(null);
-  const { progress, solved, summary } = useEquationSummary(pdfjs, source, all ? "all" : n, opts);
+  const { progress, solved, summary } = useEquationSummary(pdfjs, source, n, opts);
   const textLayer = (pdfjs.TextLayer ?? null) as never;
 
   useEffect(() => {
@@ -98,11 +98,15 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, defaultAllPa
     return (
       <div ref={root} className={["eqs", className].filter(Boolean).join(" ")} style={style}>
         <div className="eqs-status">
+          {progress.stage !== "error" ? <span className="eqs-spin" aria-hidden="true" /> : null}
           {what}
           {progress.stage !== "error" ? (
-            <div className="eqs-progress">
-              <div style={{ width: `${progress.stage === "choosing" ? 100 : pct}%` }} />
-            </div>
+            <>
+              <div className="eqs-progress">
+                <div style={{ width: `${progress.stage === "choosing" ? 100 : pct}%` }} />
+              </div>
+              <div className="eqs-note">Every length, up to the whole book, is prepared at once, so the slider is instant afterwards. A long book can take a minute or more.</div>
+            </>
           ) : null}
         </div>
       </div>
@@ -114,7 +118,9 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, defaultAllPa
   const eqs = solved.units.filter((u) => u.kind === "display").length;
   const right = 2 * solved.margins.center - solved.margins.left;
 
-  const length = all ? (summary?.pages.length ?? 0) : Math.min(n, solved.maxPages);
+  // the pages it takes (at the far end, everything may fit in fewer than the book's own)
+  const length = summary ? summary.pages.length : Math.min(n, solved.maxPages);
+  const everything = n >= solved.maxPages;
 
   if (focus !== null)
     return (
@@ -143,19 +149,16 @@ export function EquationSummary({ pdfjs, source, defaultPages = 20, defaultAllPa
       <div className="eqs-bar">
         <label>
           Summary
-          <input type="range" min={1} max={solved.maxPages} value={Math.min(n, solved.maxPages)} disabled={all} onChange={(e) => setN(+e.target.value)} aria-label="Summary length in pages" />
-          <span className="eqs-n">{all && !summary ? "" : `${length} page${length === 1 ? "" : "s"}`}</span>
-        </label>
-        <label>
-          <input type="checkbox" checked={all} onChange={(e) => setAll(e.target.checked)} /> All pages
+          <input type="range" min={1} max={solved.maxPages} value={Math.min(n, solved.maxPages)} onChange={(e) => setN(+e.target.value)} aria-label="Summary length in pages" />
+          <span className="eqs-n">{`${length} page${length === 1 ? "" : "s"}${everything ? ", everything" : ""}`}</span>
         </label>
         <span className="eqs-stats">
-          {summary ? `${all ? "all " : ""}${summary.equations}${all ? "" : ` of ${eqs}`} equations, ${summary.regions} passages from ${solved.numPages} pages` : ""}
+          {summary ? `${summary.equations} of ${eqs} equations, ${summary.regions} passages from ${solved.numPages} pages` : ""}
         </span>
       </div>
       <div className="eqs-pages">
         {(summary?.pages ?? []).map((pg, k) => (
-          <div key={`${all ? "all" : n}-${k}`} className="eqs-sheet" style={sheet}>
+          <div key={`${n}-${k}`} className="eqs-sheet" style={sheet}>
             {pg.map((p) => (
               <div key={p.unit}>
                 <Region doc={solved.doc} page={p.page} clip={p.clip} scale={scale * ((p.at.y1 - p.at.y0) / (p.clip.y1 - p.clip.y0))} pageHeight={solved.height} textLayer={textLayer} style={{ left: p.at.x0 * scale, top: p.at.y0 * scale }} />

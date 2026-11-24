@@ -82,6 +82,7 @@ describe.skipIf(!existsSync(BOOK))("a typeset book", () => {
   let book: Book;
   let pages: Map<number, PageContent>;
   let toc: TocEntry[];
+  let numPages = 0;
   beforeAll(async () => {
     const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
     const doc = await pdfjs.getDocument({ data: new Uint8Array(readFileSync(BOOK)), verbosity: 0, fontExtraProperties: true }).promise;
@@ -90,6 +91,7 @@ describe.skipIf(!existsSync(BOOK))("a typeset book", () => {
     for (let i = 0; i < doc.numPages; i++) pages.set(i, await readPage(doc as never, i, pdfjs.OPS as never));
     const start = toc[0]?.page ?? 0;
     for (const k of [...pages.keys()]) if (k < start) pages.delete(k);
+    numPages = doc.numPages;
     book = bookFrom(pages, toc, doc.numPages, { maxPages: 40 });
   }, 120_000);
 
@@ -144,30 +146,14 @@ describe.skipIf(!existsSync(BOOK))("a typeset book", () => {
     }
   });
 
-  it("extracts every equation with all its text and the headings over it, and nothing else", () => {
-    const all = book.extract();
-    const chosen = new Set(all.units);
-    const displays = book.units.flatMap((u, i) => (u.kind === "display" ? [i] : []));
-    expect(all.equations).toBe(displays.length);
-    for (const i of displays) expect(chosen.has(i)).toBe(true);
-    const expected = new Set<number>();
-    for (const ch of structure(book.units, defaultWeights))
-      for (const sec of ch.sections)
-        for (const it of sec.items) {
-          const full = it.options[it.options.length - 1]!;
-          if (!full.units.some((u) => book.units[u]!.kind === "display")) continue;
-          for (const u of full.units) expected.add(u);
-          for (const h of [ch.heading, sec.heading, it.sub]) if (h >= 0) expected.add(h);
-        }
-    expect([...chosen].sort((a, b) => a - b)).toEqual([...expected].sort((a, b) => a - b));
-    // laid out in reading order, every unit once, lines never overlapping
-    expect(all.pages.flat().map((p) => p.unit)).toEqual(all.units);
-    for (const pg of all.pages) for (let i = 1; i < pg.length; i++) expect(pg[i]!.at.y0).toBeGreaterThanOrEqual(pg[i - 1]!.at.y1);
-    // more than the longest summary, far less than the book
-    expect(all.pages.length).toBeGreaterThan(book.summary(40).pages.length);
-    expect(all.pages.length).toBeLessThan(book.numPages);
-    expect(book.extract()).toBe(all);
-  });
+  it("runs to the whole book: at its full length, every equation is in", () => {
+    const whole = bookFrom(pages, toc, numPages, {});
+    expect(whole.maxPages).toBe(numPages);
+    const s = whole.summary(numPages);
+    expect(s.equations).toBe(whole.units.filter((u) => u.kind === "display").length);
+    expect(s.pages.length).toBeLessThanOrEqual(numPages);
+    for (const pg of s.pages) for (let i = 1; i < pg.length; i++) expect(pg[i]!.at.y0).toBeGreaterThanOrEqual(pg[i - 1]!.at.y1);
+  }, 600_000);
 
   it("keeps an equation's surrounding text only with the equation", () => {
     const s = book.summary(20);

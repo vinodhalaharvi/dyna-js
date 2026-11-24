@@ -1,6 +1,6 @@
 # react-eqsum demo
 
-A 300-page math book cut down to a summary of 1 to 40 pages that is built around its equations, or to every equation with its text (**All pages**). Equations count most, the sentences around them next, and other prose least.
+A 300-page math book cut down to a summary of any length, from one page to the whole book, built around its equations. Equations count most, the sentences around them next, and other prose least.
 
 [![Watch the 36-second demo](media/poster.jpg)](media/eqsum-demo.mp4)
 
@@ -8,7 +8,7 @@ A 300-page math book cut down to a summary of 1 to 40 pages that is built around
 
 What the video shows:
 
-- **Drag for a shorter or longer summary.** The slider goes from 1 to 40 pages, and the summary and its counts follow at once.
+- **Drag for a shorter or longer summary.** The slider goes from one page to the whole book, and the summary and its counts follow at once.
 - **Every page is cut from the book itself.** Nothing is re-typed, so the fonts and the mathematics look exactly as they do in the book.
 - **It stays real text.** You can select it, copy it and search it.
 - **Click a p. N** to open the full book at the page that passage came from.
@@ -33,7 +33,6 @@ The page is [`main.tsx`](main.tsx). It is the `<EquationSummary>` component from
   pdfjs={pdfjs}
   source="book.pdf"
   defaultPages={12}
-  maxPages={40}
   worker={() => new Worker("eqsum-worker.js", { type: "module" })}
 />
 ```

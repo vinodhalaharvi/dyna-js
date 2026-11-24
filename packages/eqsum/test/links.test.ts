@@ -22,7 +22,9 @@ describe("links", () => {
     const us = [u("prose", "Theorem 2.1 For all n,"), u("display", "a = b"), u("display", "c = d"), u("heading", "Next", 3), u("prose", "By Theorem 2.1 we have")];
     const r = links(us).filter((l) => l.kind === "result");
     expect(r.map((l) => [l.from, l.to])).toEqual([[4, 1], [4, 2]]);
-    expect(r.map((l) => l.w)).toEqual([0.5, 0.5]);
+    // shared between them
+    expect(r[0]!.w).toBeCloseTo(r[1]!.w);
+    expect(r[0]!.w * 2).toBeCloseTo(links([u("display", "x = 1 (1)"), u("prose", "by (1)")])[0]!.w);
   });
   it("joins a use of a symbol to the latest equation before it that defines it", () => {
     const us = [u("display", "f(n) = f(n−1) + f(n−2)"), u("display", "f(10) = 55"), u("display", "g(n) = 2n"), u("display", "φ := g ∘ f"), u("display", "y = φ(3) + 1"), u("display", "w = 0")];

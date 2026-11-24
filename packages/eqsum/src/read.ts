@@ -124,12 +124,14 @@ export async function readPage(doc: PdfDoc, index: number, ops: Ops): Promise<Pa
     if (!it.str || !it.str.trim() || !it.transform) continue;
     const t = it.transform;
     const size = Math.hypot(t[2]!, t[3]!) || it.height;
+    if (!Number.isFinite(size) || size <= 0 || !Number.isFinite(t[4]!) || !Number.isFinite(t[5]!)) continue;
     const st = tc.styles[it.fontName] ?? { ascent: 0.75, descent: -0.25 };
     // math fonts report the ascent and descent of their tallest glyphs (big operators, delimiters):
     // a box that tall would reach into the lines around an inline symbol, so text boxes are kept to
     // the usual range of a line of type
-    const ascent = Math.min(Math.max(st.ascent, 0.6), 0.85);
-    const descent = Math.max(Math.min(st.descent, -0.1), -0.25);
+    // (bitmap Type 3 fonts report neither: the usual values stand in)
+    const ascent = Number.isFinite(st.ascent) ? Math.min(Math.max(st.ascent, 0.6), 0.85) : 0.75;
+    const descent = Number.isFinite(st.descent) ? Math.max(Math.min(st.descent, -0.1), -0.25) : -0.22;
     const base = t[5]!;
     runs.push({
       str: it.str,

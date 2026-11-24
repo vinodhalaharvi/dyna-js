@@ -1,6 +1,6 @@
 // Reads a PDF with pdf.js, solves it once (in a worker if given one), then answers any length.
 import { useEffect, useRef, useState } from "react";
-import { bodyPages, readPage, readToc, type Margins, type Ops, type PageContent, type PdfDoc, type Placement, type Unit, type Weights } from "@vhalaharvi/eqsum";
+import { bodyPages, readPage, readToc, type Margins, type Ops, type PageContent, type PdfDoc, type Placement, type Unit } from "@vhalaharvi/eqsum";
 import { solver, type FromSolver, type ToSolver } from "./protocol.js";
 
 /** The pdf.js the component draws with: `import * as pdfjs from "pdfjs-dist"`. */
@@ -37,7 +37,6 @@ export interface SummaryPages {
 export interface Options {
   /** the longest summary to prepare: the slider's end */
   maxPages?: number;
-  weights?: Partial<Weights>;
   /** makes the solver's worker; without one, solving runs on the page's thread */
   worker?: () => Worker;
 }
@@ -83,7 +82,7 @@ export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: n
         if (cancelled || !read.length) return;
         setProgress({ stage: "choosing", done: 0, total: 1 });
         const size: [number, number] = [read[0]![1].width, read[0]![1].height];
-        const msg: ToSolver = { type: "solve", pages: read, toc, numPages: doc.numPages, maxPages: Math.min(opts.maxPages ?? 40, doc.numPages), weights: opts.weights ?? {} };
+        const msg: ToSolver = { type: "solve", pages: read, toc, numPages: doc.numPages, maxPages: Math.min(opts.maxPages ?? 40, doc.numPages) };
         if (opts.worker) {
           worker = opts.worker();
           worker.onmessage = (e: MessageEvent<FromSolver>) => onReply(e.data, doc, doc.numPages, size);
@@ -103,9 +102,9 @@ export function useEquationSummary(pdfjs: PdfJs, source: Source | null, pages: n
       worker?.terminate();
       send.current = null;
     };
-    // a new book when the source, weights or longest length change
+    // a new book when the source or the longest length changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, opts.maxPages, JSON.stringify(opts.weights ?? {})]);
+  }, [source, opts.maxPages]);
 
   useEffect(() => {
     if (!solved || !send.current) return;

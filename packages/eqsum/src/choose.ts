@@ -24,9 +24,11 @@ export interface Weights {
   decay: number;
   /** share for a worked example in numbers only (3 + 7 + 11 + 15 = 36) */
   example: number;
+  /** how much what refers to an equation adds to its worth (0: not at all, 1: in full) */
+  links: number;
 }
 
-export const defaultWeights: Weights = { eq: 10, near: 4, next: 2.5, prose: 1, mathProse: 1.5, code: 1, figure: 1, alone: 0.6, decay: 0.85, example: 0.5 };
+export const defaultWeights: Weights = { eq: 10, near: 4, next: 2.5, prose: 1, mathProse: 1.5, code: 1, figure: 1, alone: 0.6, decay: 0.85, example: 0.5, links: 1 };
 
 /** Points between pasted regions, and the height unit (half a line). */
 export const GAP = 6;
@@ -93,7 +95,7 @@ export function hasVariable(text: string): boolean {
 }
 
 /** An equation with the paragraphs nearer to it than to another (up to two each side), the rest one by one. */
-function itemsOf(units: Unit[], run: number[], w: Weights): Item[] {
+function itemsOf(units: Unit[], run: number[], w: Weights, importance?: ArrayLike<number>): Item[] {
   const isEq = (k: number) => units[run[k]!]!.kind === "display";
   const isFig = (k: number) => units[run[k]!]!.kind === "figure";
   const anchor = run.map(() => -1);
@@ -141,6 +143,8 @@ function itemsOf(units: Unit[], run: number[], w: Weights): Item[] {
     const eqU = units[run[k]!]!;
     let eqv = w.eq * (1 + 0.25 * (Math.min(eqU.rows, 5) - 1));
     if (!hasVariable(eqU.text)) eqv *= w.example;
+    // what the rest of the book relies on is worth more
+    if (importance) eqv *= 1 + w.links * ((importance[run[k]!] ?? 1) - 1);
     const options: Option[] = [];
     for (let b = 0; b <= bef.length; b++)
       for (let a = 0; a <= aft.length; a++) {
@@ -164,8 +168,11 @@ function itemsOf(units: Unit[], run: number[], w: Weights): Item[] {
   return out;
 }
 
-/** The book as chapters of sections of items. */
-export function structure(units: Unit[], w: Weights): Chapter[] {
+/** The most items solved as one section. */
+const MAX_ITEMS = 60;
+
+/** The book as chapters of sections of items; `importance` scales each equation's worth (from links.ts). */
+export function structure(units: Unit[], w: Weights, importance?: ArrayLike<number>): Chapter[] {
   const chapters: Chapter[] = [];
   const chap = () => (chapters.length ? chapters[chapters.length - 1]! : (chapters.push({ heading: -1, sections: [] }), chapters[0]!));
   const sec = () => {
@@ -176,7 +183,13 @@ export function structure(units: Unit[], w: Weights): Chapter[] {
   let run: number[] = [];
   let sub = -1;
   const flush = () => {
-    if (run.length) for (const it of itemsOf(units, run, w)) sec().items.push({ ...it, sub });
+    // a section that grows long (a document whose section headings could not be read, or one with
+    // many subsections) goes on in blocks of its own: the answer barely changes, and each block
+    // stays small to solve
+    for (const it of run.length ? itemsOf(units, run, w, importance) : []) {
+      if (sec().items.length >= MAX_ITEMS) chap().sections.push({ heading: -1, items: [] });
+      sec().items.push({ ...it, sub });
+    }
     run = [];
   };
   units.forEach((u, i) => {
@@ -349,7 +362,8 @@ export function solve(units: Unit[], chapters: Chapter[], budget: number, w: Wei
         for (let se: Best<SecLabel> | null = secVecs[l.c]![l.j]!.at![l.grade]!; se; se = se.kids?.[0] ?? null) {
           const sl = se.label;
           if (sl.i >= 0 && sl.o >= 0) {
-            if (sl.sub >= 0) out.push(sl.sub);
+            // (a subsection going on in a second block is headed once)
+            if (sl.sub >= 0 && !out.includes(sl.sub)) out.push(sl.sub);
             out.push(...s.items[sl.i]!.options[sl.o]!.units);
           }
         }

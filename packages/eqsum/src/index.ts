@@ -3,11 +3,13 @@
 // source pages, so nothing is re-typed.
 import { QUANTUM, defaultWeights, solve, structure, type Weights } from "./choose.js";
 import { place, type Geometry, type Placement } from "./place.js";
+import { importance, links, type Link } from "./links.js";
 import { bodyPages, measure, unitsOf, type Margins, type Unit } from "./units.js";
 import { readPage, readToc, type Ops, type PageContent, type PdfDoc, type TocEntry } from "./read.js";
 
 export { defaultWeights, solve, structure, sectionProblem, hasVariable, bestOf, cost, GAP, QUANTUM, type Weights, type Summary, type Chapter, type Section, type Item, type Option, type Best } from "./choose.js";
 export { place, regionOf, HEAD_GAP, type Placement, type Geometry } from "./place.js";
+export { links, importance, type Link, type LinkKind } from "./links.js";
 export { measure, unitsOf, rowsOf, clusters, bodyPages, type Unit, type Kind, type Margins } from "./units.js";
 export { readPage, readToc, type Box, type Run, type PageContent, type TocEntry, type PdfDoc, type Ops } from "./read.js";
 
@@ -18,6 +20,9 @@ export interface Book {
   height: number;
   units: Unit[];
   margins: Margins;
+  /** what refers to what (equation numbers, numbered results, symbols), and each unit's worth for it (1: nothing refers to it) */
+  links: Link[];
+  importance: Float64Array;
   toc: TocEntry[];
   maxPages: number;
   /** the summary in `pages` pages (or fewer): its pages of placements, and what it holds */
@@ -62,7 +67,10 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
   const usable = geo.bottom - geo.top;
   const maxPages = Math.max(1, Math.min(opts.maxPages ?? 40, numPages));
   opts.onProgress?.(0, 1, "choosing");
-  const chapters = structure(units, w);
+  // what the book refers to, and how much each equation matters for it
+  const ls = links(units);
+  const imp = importance(units.length, (i) => (units[i]!.kind === "display" ? w.eq : units[i]!.kind === "heading" ? 0 : 1), ls);
+  const chapters = structure(units, w, imp);
   const solved = solve(units, chapters, Math.floor((maxPages * usable * 0.95) / QUANTUM), w);
   opts.onProgress?.(1, 1, "choosing");
   const cache = new Map<number, Extract>();
@@ -73,6 +81,8 @@ export function bookFrom(pages: Map<number, PageContent>, toc: TocEntry[], numPa
     width: geo.width,
     height: geo.height,
     units,
+    links: ls,
+    importance: imp,
     margins,
     toc,
     maxPages,

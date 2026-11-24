@@ -1,15 +1,33 @@
 # dyna-js
 
-Dynamic programming as recursion schemes over semirings, and a photo collage
-built on it, in TypeScript.
+Three things in one repository, each built on the one below it:
 
-| Package | What it is |
+- **[Equation Summary](#equation-summary):** any typeset math PDF, summarised to any number of pages, keeping its equations.
+- **[Collage](#collage):** a gap-free photo collage for 1 to 9 photos that re-lays itself instantly at any size.
+- **[dyna](#dyna):** the small solver library both are built on.
+
+## Equation Summary
+
+A 300-page math book, summarised to 12 pages, or any length you drag the slider to. Every page of the summary is cut from the book itself, so the mathematics is as sharp as the original and the text can still be selected and searched. It all runs in the browser; the PDF is never uploaded.
+
+[![Watch the 30-second video](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/demo-eqsum/media/promo.jpg)](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
+▶ [Watch the 30-second video on YouTube](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
+| | |
 | --- | --- |
-| [`@vhalaharvi/dyna`](packages/dyna) | The core: describe a problem as a coalgebra (how a state splits) and an algebra over a semiring (how answers combine); `dyna` memoises and folds it. |
-| [`@vhalaharvi/collage`](packages/collage) | Photo collage layouts as one such problem: every guillotine layout of up to 9 photos, solved once and indexed by aspect ratio. |
-| [`@vhalaharvi/react-collage`](packages/react-collage) | `<CollageAlbum>`: the collage as a React component, in a grid or scrapbook style, resizing instantly. |
+| [Chrome extension](chrome-eqsum) | Click the toolbar button on any PDF open in Chrome, or right-click a link to one. |
+| [`@vhalaharvi/react-eqsum`](packages/react-eqsum) | `<EquationSummary>`: the viewer as a React component, with the slider and Download PDF. |
+| [`@vhalaharvi/eqsum`](packages/eqsum) | The engine, framework-free: reads the PDF, chooses what goes in, lays out the pages. |
+| [Demo](demo-eqsum) | A page you can run locally on your own book. |
 
-Each package builds only on the one above it.
+```sh
+npm install @vhalaharvi/react-eqsum pdfjs-dist
+```
+
+## Collage
+
+Every photo keeps its shape, there are no gaps, and very little is cropped.
 
 ![Seven cats in the grid style](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/grid.jpg)
 
@@ -20,6 +38,11 @@ Resizing is a lookup, not a new solve:
 ![Dragging the album from wide to tall re-lays the photos at every step](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/docs/resize.webp)
 
 Photos: [max-mapper/cats](https://github.com/max-mapper/cats), BSD licensed ([credits](docs/CATS.md)).
+
+| | |
+| --- | --- |
+| [`@vhalaharvi/react-collage`](packages/react-collage) | `<CollageAlbum>`: the collage as a React component, in a grid or scrapbook style. |
+| [`@vhalaharvi/collage`](packages/collage) | The layouts, framework-free: every guillotine layout of up to 9 photos, solved once and indexed by aspect ratio. |
 
 ```sh
 npm install @vhalaharvi/react-collage
@@ -37,6 +60,10 @@ import { CollageAlbum } from "@vhalaharvi/react-collage";
   ]}
 />;
 ```
+
+## dyna
+
+[`@vhalaharvi/dyna`](packages/dyna) is the core both are built on: dynamic programming as recursion schemes over semirings, in TypeScript, with no dependencies. Describe a problem as a coalgebra (how a state splits) and an algebra over a semiring (how answers combine); `dyna` memoises and folds it.
 
 ## How it is checked
 

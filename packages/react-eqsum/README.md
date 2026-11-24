@@ -5,6 +5,10 @@ length from one page to the whole book, or to 100 pages for a longer one (instan
 each region's *p. N* opens the book at its source page. Solving takes a while for a long book; a
 spinner says so meanwhile.
 
+[![Watch the 30-second video](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/demo-eqsum/media/promo.jpg)](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
+▶ [Watch the 30-second video on YouTube](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
 ```tsx
 import * as pdfjs from "pdfjs-dist";
 import { EquationSummary } from "@vhalaharvi/react-eqsum";

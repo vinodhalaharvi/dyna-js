@@ -4,6 +4,10 @@ Summarise any typeset math PDF you find online (a book, lecture notes, a paper) 
 pages, keeping its equations and the text around them. It's [react-eqsum](../packages/react-eqsum)
 in a Chrome extension.
 
+[![Watch the 30-second video](https://raw.githubusercontent.com/vinodhalaharvi/dyna-js/main/demo-eqsum/media/promo.jpg)](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
+▶ [Watch the 30-second video on YouTube](https://www.youtube.com/watch?v=uE2RSIX7nrA)
+
 - **On a PDF open in Chrome:** click the toolbar button.
 - **On a link to a PDF:** right-click it and choose **Summarise this PDF**.
 - **A file on your computer:** drop it on the extension's page, or turn on *Allow access to file
